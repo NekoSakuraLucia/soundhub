@@ -118,7 +118,12 @@ class Bot {
     async handleButtonInteraction(interaction) {
         const customId = interaction.customId;
         const guildId = interaction.guildId;
-        const player = this.client.lavalink.players.get(guildId);
+        /**
+         * The reason for using getPlayer instead of players.get 
+         * is because it is easier to read and less confusing for functionality.
+         * Using a simpler type improves the code's efficiency as well.
+         */
+        const player = this.client.lavalink.getPlayer(guildId);
 
         switch (customId) {
             case 'resume':
@@ -129,7 +134,7 @@ class Bot {
                 // Handle pause button
                 await pauseTrack({ client: this.client, interaction });
                 break;
-                case 'skip':
+            case 'skip':
                 // Handle skip button
                 await skipTrack({ client: this.client, interaction });
                 break;
@@ -142,9 +147,35 @@ class Bot {
                     await interaction.reply("No player found!");
                 }
                 break;
-            case 'queue': 
+            case 'queue':
                 //Handle queue button
-                await displayQueue({client: this.client, interaction})
+                await displayQueue({ client: this.client, interaction });
+                break;
+            case 'volume_up':
+                if (player) {
+                    let currentVolume = player.volume;
+                    if (currentVolume < 100) {
+                        player.setVolume(currentVolume + 10)
+                        await interaction.reply(`Volume increased to ${currentVolume + 10}%`);
+                    } else {
+                        await interaction.reply("Volume is already at maximum!");
+                    }
+                } else {
+                    await interaction.reply("No player found!");
+                }
+                break;
+            case 'volume_down':
+                if (player) {
+                    let currentVolume = player.volume;
+                    if (currentVolume > 0) {
+                        player.setVolume(currentVolume - 10);
+                        await interaction.reply(`Volume decreased to ${currentVolume - 10}%`);
+                    } else {
+                        await interaction.reply("Volume is already at minimum!");
+                    }
+                } else {
+                    await interaction.reply("No player found!");
+                }
                 break;
             default:
                 await interaction.reply('Unknown button clicked!');

@@ -1,6 +1,5 @@
 const {
     SlashCommandBuilder,
-    EmbedBuilder,
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle
@@ -110,6 +109,18 @@ module.exports = {
                     .setStyle(ButtonStyle.Secondary),
             );
 
-        await interaction.editReply({ embeds: [embed], components: [row1, row2] });
+        const row3 = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId('volume_up')
+                    .setLabel("🔊 Volume Up")
+                    .setStyle(ButtonStyle.Secondary),
+                new ButtonBuilder()
+                    .setCustomId('volume_down')
+                    .setLabel('🔉 Volume Down')
+                    .setStyle(ButtonStyle.Secondary)
+            )
+
+        await interaction.editReply({ embeds: [embed], components: [row1, row2, row3] });
     }
 };
